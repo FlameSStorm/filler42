@@ -2,39 +2,34 @@ FLAGS = -Werror -Wall -Wextra
 
 NAME = dkotlyar.filler 
 
-FILES = 	main.c \
-			filler.c
+FILES = main.c \
+		filler.c
 
-LIBFILES = 	ft_strlen.c \
-			ft_strstr.c \
-			ft_strchr.c \
-			ft_strsub.c \
-			ft_strdup.c \
-			ft_strdel.c \
-			ft_atoi.c \
-			ft_strnew.c \
-			get_next_line.c 
+OBJSRC = $(FILES:.c=.o)
 
-INC = libft.h filler.h get_next_line.h
-
-LIBSRC = $(addprefix src/libft/, $(LIBFILES))
-
-FIILERSRC = $(addprefix src/, $(FILES))
-
-INCSRC = $(addprefix includes/, $(INC))
+OBJ = $(addprefix obj/, $(OBJSRC))
+SRC = $(addprefix src/, $(FILES))
 
 .PHONY: re all clean fclean
 
 all: $(NAME)
 
 $(NAME):
-	gcc $(FLAGS) $(LIBSRC) $(FILLERSRC) -I $(INCSRC) 
+	@make -C libft/
+	@mkdir obj
+	@gcc $(FLAGS) -c $(SRC) -I includes
+	@mv filler.o obj/
+	@mv main.o obj/
+	@gcc -o $(NAME) $(FLAGS) $(OBJ) libft/libft.a -I includes 
 	@echo "\033[32mCreated filler executable\033[0m"
 
 clean:
-	/bin/rm -f $(NAME)
-	@echo "\033[32mRemoved filler executable\033[0m"
+	@/bin/rm -rf $(OBJ) obj
+	@make -C libft/ fclean
+	@echo "\033[31mRemoved filler object files\033[0m"
 
 fclean: clean
+	@/bin/rm -rf $(NAME)
+	@echo "\033[31mRemoved filler executable\033[0m"
 
 re: fclean all
